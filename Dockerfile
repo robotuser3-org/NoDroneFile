@@ -1,11 +1,14 @@
 FROM golang:alpine3.6 AS binary
 ADD . /app
 WORKDIR /app
-RUN go build -o http
+RUN apk update && apk add git && go get gopkg.in/sirupsen/logrus.v1 && go get gopkg.in/spf13/viper.v1
+
+RUN go vet .
+RUN GOOS=linux GOARCH=386 CGO_ENABLED=0 go build -a --installsuffix cgo -ldflags="-s -w" -o whoami .
 
 FROM alpine:3.6
 WORKDIR /app
-ENV PORT 8000
-EXPOSE 8000
-COPY --from=binary /app/http /app
-CMD ["/app/http"]
+ENV PORT 80
+COPY --from=binary /app/whoami /app
+CMD ["/app/whoami", "-port", "80"]
+EXPOSE 80
