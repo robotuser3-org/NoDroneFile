@@ -8,7 +8,7 @@ RUN GOOS=linux GOARCH=386 CGO_ENABLED=0 go build -a --installsuffix cgo -ldflags
 
 FROM alpine:3.6
 WORKDIR /app
-ENV PORT 80
+ENV PORT 8080
 COPY --from=binary /app/whoami /app
 CMD ["/app/whoami", "-port", "80"]
-EXPOSE 80
+EXPOSE 8080
